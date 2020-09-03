@@ -18,26 +18,19 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
   File _image;
   int _weight;
   String _imageName;
-  String _imageExtension;
   DateTime _pickedDate;
-  String _imagesPath;
+  String imagesPath;
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
 
-    Future<String> _createImagesDir() async {
+    Future<String> _getImagesDirPath() async {
       final Directory _appDocDir = await getApplicationDocumentsDirectory();
       final Directory _appDocDirImages =
-          Directory('${_appDocDir.path}/Gallery/');
-      if (await _appDocDirImages.exists()) {
-        return _appDocDirImages.path;
-      } else {
-        final Directory _appDocDirNewImages =
-            await _appDocDirImages.create(recursive: true);
-        return _appDocDirNewImages.path;
-      }
+          Directory('${_appDocDir.path}/ImageGallery/');
+      return _appDocDirImages.path;
     }
 
     void _pickImage() async {
@@ -45,22 +38,16 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
           await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedImage == null) return;
       _imageName = basename(pickedImage.path);
-      _imageExtension = extension(pickedImage.path);
       setState(() {
         _image = File(pickedImage.path);
       });
     }
 
     void _saveImage() async {
-      _imagesPath = await _createImagesDir();
-      if (await File('$_imagesPath/$_imageName$_imageExtension').exists()) {
-        print('File exists');
-        return;
-      } else {
-        _image = await _image.copy('$_imagesPath/$_imageName$_imageExtension');
-        print('$_imagesPath');
-        Navigator.of(context).pop();
-      }
+      imagesPath = await _getImagesDirPath();
+      if(_image == null) return;
+      _image = await _image.copy('$imagesPath/$_imageName');
+      Navigator.of(context).pop();
     }
 
     void _pickDate() {
@@ -96,6 +83,7 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
                 Container(
                   height: mediaQuery.size.height * 0.08,
                   width: mediaQuery.size.width * 0.4,
+                  alignment: Alignment.center,
                   child: Text(
                     'Enter your \ncurrent weight:',
                     style: TextStyle(
@@ -106,7 +94,8 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
                 ),
                 Container(
                   height: mediaQuery.size.height * 0.08,
-                  width: mediaQuery.size.width * 0.2,
+                  width: mediaQuery.size.width * 0.25,
+                  alignment: Alignment.center,
                   child: Padding(
                     padding: EdgeInsets.all(mediaQuery.size.height * 0.006),
                     child: TextField(

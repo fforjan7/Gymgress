@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'gallery_screen.dart';
 import 'newphoto_screen.dart';
-//import 'package:charts_flutter/flutter.dart' as charts;
+
 
 class MyBodyScreen extends StatelessWidget {
   static const routeName = '/myBody';
 
+  
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;

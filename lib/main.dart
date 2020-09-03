@@ -1,26 +1,57 @@
-import 'dart:io';
+import 'dart:io' as io;
 
-import 'package:Gymgress/screens/gallery_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'screens/exercises_screen.dart';
+import 'screens/gallery_screen.dart';
 import 'screens/mybody_screen.dart';
 import 'screens/newphoto_screen.dart';
 import 'screens/tabs_screen.dart';
 
 void main() {
-  new Directory('Gallery').create()
-    .then((Directory directory) {
-      print(directory.path);
-  });
-
   runApp(MyApp());
-
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  void _createImagesDir() async {
+    final io.Directory _appDocDir = await getApplicationDocumentsDirectory();
+    final io.Directory _appDocDirImages =
+        io.Directory('${_appDocDir.path}/ImageGallery/');
+    if (await _appDocDirImages.exists()) {
+      return;
+    } else {
+      await _appDocDirImages.create(recursive: true);
+    }
+  }
+
+  void _createVideoDir() async {
+    final io.Directory _appDocDir = await getApplicationDocumentsDirectory();
+    final io.Directory _appDocDirImages =
+        io.Directory('${_appDocDir.path}/VideoGallery/');
+    if (await _appDocDirImages.exists()) {
+      return;
+    } else {
+      await _appDocDirImages.create(recursive: true);
+    }
+  }
+
+  @override
+  void initState() { 
+    super.initState();
+    _createImagesDir();
+    _createVideoDir();
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gymgress',
