@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:Gymgress/models/bodyweightinfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../utils/DBBodyweightInfo.dart';
 
 class NewPhotoScreen extends StatefulWidget {
   static const nameRoute = '/newPhoto';
@@ -20,6 +23,7 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
   String _imageName;
   DateTime _pickedDate;
   String imagesPath;
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
 
     void _saveImage() async {
       imagesPath = await _getImagesDirPath();
-      if(_image == null) return;
+      if (_image == null) return;
       _image = await _image.copy('$imagesPath/$_imageName');
       Navigator.of(context).pop();
     }
@@ -175,6 +179,11 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
           ),
           RaisedButton(
             onPressed: () {
+              if (_image == null || _weight == null || _pickedDate == null)
+                return;
+              DBBodyweightInfo dbBodyweightInfo = DBBodyweightInfo();
+              BodyweightInfo bodyweightInfo = BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
+              dbBodyweightInfo.save(bodyweightInfo);
               _saveImage();
             },
             child: Text(

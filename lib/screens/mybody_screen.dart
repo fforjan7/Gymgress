@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
 
+import '../models/bodyweightinfo.dart';
+import '../utils/DBBodyweightInfo.dart';
 import 'gallery_screen.dart';
 import 'newphoto_screen.dart';
 
-
-class MyBodyScreen extends StatelessWidget {
+class MyBodyScreen extends StatefulWidget {
   static const routeName = '/myBody';
 
-  
+  @override
+  _MyBodyScreenState createState() => _MyBodyScreenState();
+}
+
+class _MyBodyScreenState extends State<MyBodyScreen> {
+  DBBodyweightInfo dbBodyweightInfo;
+  List<BodyweightInfo> bodyweightInfos;
+  int _weight;
+
+  @override
+  void initState() {
+    super.initState();
+    dbBodyweightInfo = DBBodyweightInfo();
+    bodyweightInfos = [];
+    _refreshBodyweightInfos();
+  }
+
+  void _refreshBodyweightInfos() {
+    dbBodyweightInfo.getBodyweightInfos().then((info) {
+      bodyweightInfos.clear();
+      bodyweightInfos.addAll(info);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
@@ -68,7 +92,7 @@ class MyBodyScreen extends StatelessWidget {
               ),
               SizedBox(width: mediaQuery.size.width * 0.04),
               Text(
-                '65',
+                _weight != null ? '$_weight' : '???',
                 style: TextStyle(
                   color: Theme.of(context).textSelectionColor,
                   fontSize: 40.0,
