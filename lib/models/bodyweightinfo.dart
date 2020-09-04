@@ -15,7 +15,7 @@ class BodyweightInfo {
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       'id' : id,
-      'date': date,
+      'date': date.toIso8601String(),
       'weight': weight,
     };
     return map;
@@ -23,7 +23,7 @@ class BodyweightInfo {
 
   BodyweightInfo.fromMap(Map<String,dynamic> map){
     id = map['id'];
-    date = map['date'];
+    date = DateTime.parse(map['date']);
     weight = map['weight'];
   }
 }

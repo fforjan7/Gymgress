@@ -50,11 +50,7 @@ class DBBodyweightInfo {
     List<Map<String, dynamic>> maps = await dbClient.query(TABLE);
     if (maps.length > 0) {
       return List.generate(maps.length, (i) {
-        return BodyweightInfo(
-          id: maps[i][ID],
-          date: maps[i][DATE],
-          weight: maps[i][WEIGHT],
-        );
+        return BodyweightInfo.fromMap(maps[i]);
       });
     }
     return list;

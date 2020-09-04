@@ -27,8 +27,11 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
 
   void _refreshBodyweightInfos() {
     dbBodyweightInfo.getBodyweightInfos().then((info) {
-      bodyweightInfos.clear();
-      bodyweightInfos.addAll(info);
+      setState(() {
+        bodyweightInfos.clear();
+        bodyweightInfos.addAll(info);
+        _weight = bodyweightInfos.last.weight;
+      });
     });
   }
 
@@ -115,7 +118,9 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
               ),
               FloatingActionButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(NewPhotoScreen.nameRoute);
+                  Navigator.of(context)
+                      .pushNamed(NewPhotoScreen.nameRoute)
+                      .then((value) => _refreshBodyweightInfos());
                 },
                 backgroundColor: Theme.of(context).textSelectionColor,
                 elevation: 15.0,
