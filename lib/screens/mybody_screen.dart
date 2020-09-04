@@ -30,7 +30,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
       setState(() {
         bodyweightInfos.clear();
         bodyweightInfos.addAll(info);
-        _weight = bodyweightInfos.last.weight;
+        if (bodyweightInfos.length > 0) _weight = bodyweightInfos.last.weight;
       });
     });
   }
@@ -55,9 +55,18 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
         Container(
           margin:
               EdgeInsets.symmetric(horizontal: mediaQuery.size.height * 0.02),
-          color: Theme.of(context).accentColor,
+          color: Theme.of(context).scaffoldBackgroundColor,
           height: mediaQuery.size.height * 0.4,
           width: mediaQuery.size.width * 1,
+          child: Center(
+            child: Text(
+              'No data',
+              style: TextStyle(
+                color: Theme.of(context).accentColor,
+                fontSize: 25.0,
+              ),
+            ),
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(

@@ -38,19 +38,29 @@ class _GalleryScreenState extends State<GalleryScreen> {
           style: Theme.of(context).textTheme.headline6,
         ),
       ),
-      body: GridView.builder(
-        itemCount: images.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
-          mainAxisSpacing: mediaQuery.size.height * 0.01,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          return Image.file(
-            images[index],
-            fit: BoxFit.cover,
-          );
-        },
-      ),
+      body: images.length > 0
+          ? GridView.builder(
+              itemCount: images.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 1,
+                mainAxisSpacing: mediaQuery.size.height * 0.01,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                return Image.file(
+                  images[index],
+                  fit: BoxFit.cover,
+                );
+              },
+            )
+          : Center(
+              child: Text(
+                'Gallery is empty',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                  fontSize: 25.0,
+                ),
+              ),
+            ),
     );
   }
 }

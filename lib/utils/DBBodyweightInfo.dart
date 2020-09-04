@@ -46,14 +46,8 @@ class DBBodyweightInfo {
 
   Future<List<BodyweightInfo>> getBodyweightInfos() async {
     var dbClient = await dbBodyweightInfo;
-    List<BodyweightInfo> list = [];
     List<Map<String, dynamic>> maps = await dbClient.query(TABLE);
-    if (maps.length > 0) {
-      return List.generate(maps.length, (i) {
-        return BodyweightInfo.fromMap(maps[i]);
-      });
-    }
-    return list;
+    return maps.map((e) => BodyweightInfo.fromMap(e)).toList();
   }
 
   Future close() async {
