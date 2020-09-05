@@ -31,6 +31,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
+    images.sort((a, b) {
+      return a.toString().compareTo(b.toString());
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(

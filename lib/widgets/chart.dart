@@ -1,9 +1,10 @@
-import '../models/bodyweightinfo.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
 
+import '../models/chartInfo.dart';
+
 class BodyweightChart extends StatefulWidget {
-  final List<BodyweightInfo> data;
+  final List<ChartInfo> data;
   BodyweightChart({this.data});
 
   @override
@@ -13,7 +14,7 @@ class BodyweightChart extends StatefulWidget {
 class _BodyweightChartState extends State<BodyweightChart> {
   @override
   Widget build(BuildContext context) {
-    List<charts.Series<BodyweightInfo, DateTime>> series = [
+    List<charts.Series<ChartInfo, DateTime>> series = [
       charts.Series(
         id: 'Bodyweight',
         data: this.widget.data,

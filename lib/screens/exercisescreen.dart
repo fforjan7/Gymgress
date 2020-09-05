@@ -1,5 +1,9 @@
-import 'package:Gymgress/screens/newvideoscreen.dart';
 import 'package:flutter/material.dart';
+
+import '../models/chartInfo.dart';
+import '../models/exercisesinfo.dart';
+import '../utils/dbhelper.dart';
+import 'newvideoscreen.dart';
 
 class ExerciseScreen extends StatefulWidget {
   static const routeName = '/exercises';
@@ -13,6 +17,11 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   int id;
   bool _loadedInitData = false;
 
+  DBHelper dbExercisesInfo;
+  List<ExerciseInfo> exerciseInfos;
+  List<ChartInfo> exercisesChartInfos;
+  int _weight;
+
   @override
   void didChangeDependencies() {
     if (!_loadedInitData) {
@@ -23,6 +32,36 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       _loadedInitData = true;
     }
     super.didChangeDependencies();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dbExercisesInfo = DBHelper();
+    exerciseInfos = [];
+    exercisesChartInfos = [];
+    _refreshInfos();
+  }
+
+  void _refreshInfos() {
+    dbExercisesInfo.getExerciseInfos(id).then((weightInfo) {
+      setState(() {
+        exerciseInfos.clear();
+        exerciseInfos.addAll(weightInfo);
+        if (exerciseInfos.length > 0) {
+          exerciseInfos.sort((a, b) {
+            return a.date.compareTo(b.date);
+          });
+          _weight = exerciseInfos.last.weight;
+        }
+      });
+      dbExercisesInfo.getExerciseChartInfos(id).then((chartInfo) {
+        setState(() {
+          exercisesChartInfos.clear();
+          exercisesChartInfos.addAll(chartInfo);
+        });
+      });
+    });
   }
 
   @override
@@ -55,7 +94,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               ),
             ),
           ),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -68,7 +106,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               ),
               SizedBox(width: mediaQuery.size.width * 0.04),
               Text(
-                'Weight',
+                _weight != null ? '$_weight' : '???',
                 style: TextStyle(
                   color: Theme.of(context).textSelectionColor,
                   fontSize: 40.0,
@@ -86,10 +124,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                   ),
                 ),
               ),
-              
             ],
           ),
-
           Container(
             margin: EdgeInsets.only(bottom: mediaQuery.size.height * 0.02),
             height: mediaQuery.size.height * 0.3,
@@ -119,7 +155,11 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 style: TextStyle(fontSize: 25.0),
               ),
               onPressed: () {
-                Navigator.of(context).pushNamed(NewVideoScreen.nameRoute);
+                print(id);
+                Navigator.of(context)
+                    .pushNamed(NewVideoScreen.nameRoute, arguments: {
+                  'id': id,
+                }).then((_) => () {});
               },
               color: Theme.of(context).primaryColor,
               textColor: Theme.of(context).textSelectionColor,

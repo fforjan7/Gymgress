@@ -33,7 +33,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _createVideoDir() async {
+
+  void _createVideosDir() async {
     final io.Directory _appDocDir = await getApplicationDocumentsDirectory();
     final io.Directory _appDocDirImages =
         io.Directory('${_appDocDir.path}/VideoGallery/');
@@ -48,7 +49,7 @@ class _MyAppState extends State<MyApp> {
   void initState() { 
     super.initState();
     _createImagesDir();
-    _createVideoDir();
+    _createVideosDir();
   }
 
   @override

@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:Gymgress/models/bodyweightinfo.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_player/video_player.dart';
 
-import '../utils/DBBodyweightInfo.dart';
+//import '../utils/dbhelper.dart';
 
 class NewVideoScreen extends StatefulWidget {
   static const nameRoute = '/newVideo';
@@ -19,16 +19,48 @@ class NewVideoScreen extends StatefulWidget {
 
 class _NewVideoScreenState extends State<NewVideoScreen> {
   int id;
+  bool _loadedInitData = false;
   File _video;
   int _weight;
   String _videoName;
   DateTime _pickedDate;
   String videosPath;
+  VideoPlayerController _videoPlayerController;
+  ChewieController _chewieController;
+
+  @override
+  void didChangeDependencies() {
+    if (!_loadedInitData) {
+      final routeArgs =
+          ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
+      id = routeArgs['id'];
+      _loadedInitData = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    if (_video != null) {
+      _videoPlayerController.dispose();
+      _chewieController.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
+
+    ChewieController _setChewieController(videoController) {
+      return ChewieController(
+        videoPlayerController: videoController,
+        aspectRatio: 3 / 2,
+        autoPlay: true,
+        looping: false,
+      );
+    }
 
     Future<String> _getVideosDirPath() async {
       final Directory _appDocDir = await getApplicationDocumentsDirectory();
@@ -50,11 +82,14 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
       if (pickedVideo == null) return;
       if (_videoName == null) {
         _newVideoFile(pickedVideo);
+        _videoPlayerController = VideoPlayerController.file(_video);
+        _chewieController = _setChewieController(_videoPlayerController);
       } else {
         videosPath = await _getVideosDirPath();
-        //true ili false??
         Directory('$videosPath/$_videoName').delete(recursive: true);
         _newVideoFile(pickedVideo);
+        _videoPlayerController = VideoPlayerController.file(_video);
+        _chewieController = _setChewieController(_videoPlayerController);
       }
     }
 
@@ -65,12 +100,14 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
       Navigator.of(context).pop();
     }
 
-    void _pickDate() {
+    void _pickDate() async {
+      DateTime start = DateTime(DateTime.now().year, 1, 1);
+      DateTime end = DateTime.now();
       showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
-        lastDate: DateTime.now(),
+        initialDate: end,
+        firstDate: start,
+        lastDate: end,
       ).then((pickedDate) {
         if (pickedDate == null) return;
         setState(() {
@@ -180,22 +217,29 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
           ),
           Container(
             color: Theme.of(context).scaffoldBackgroundColor,
-            height: mediaQuery.size.height * 0.4,
+            height: mediaQuery.size.width * 1,
             width: mediaQuery.size.width * 1,
             margin: EdgeInsets.symmetric(
               horizontal: mediaQuery.size.height * 0.02,
               vertical: mediaQuery.size.height * 0.03,
             ),
-            child: _video != null ? Image.file(_video) : Text(''),
+            child: _video != null
+                ? FittedBox(
+                    fit: BoxFit.contain,
+                    child: Chewie(
+                      controller: _chewieController,
+                    ),
+                  )
+                : Text(''),
           ),
           RaisedButton(
             onPressed: () {
               if (_video == null || _weight == null || _pickedDate == null)
                 return;
-              DBBodyweightInfo dbBodyweightInfo = DBBodyweightInfo();
-              BodyweightInfo bodyweightInfo =
-                  BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
-              dbBodyweightInfo.save(bodyweightInfo);
+              // DBHelper dbBodyweightInfo = DBHelper();
+              // BodyweightInfo bodyweightInfo =
+              //     BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
+              // dbBodyweightInfo.save(bodyweightInfo);
               _saveVideo();
             },
             child: Text(

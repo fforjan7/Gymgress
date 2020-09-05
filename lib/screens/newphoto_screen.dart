@@ -1,14 +1,13 @@
 import 'dart:io';
 
-import 'package:Gymgress/models/bodyweightinfo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../utils/DBBodyweightInfo.dart';
+import '../models/bodyweightinfo.dart';
+import '../utils/dbhelper.dart';
 
 class NewPhotoScreen extends StatefulWidget {
   static const nameRoute = '/newPhoto';
@@ -40,7 +39,7 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
       final PickedFile pickedImage =
           await ImagePicker().getImage(source: ImageSource.gallery);
       if (pickedImage == null) return;
-      _imageName = basename(pickedImage.path);
+      _imageName = DateTime.now().toIso8601String();
       setState(() {
         _image = File(pickedImage.path);
       });
@@ -54,27 +53,13 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
     }
 
     void _pickDate() async {
-      DBBodyweightInfo db = new DBBodyweightInfo();
-      List<BodyweightInfo> bodyweightInfoList = await db.getBodyweightInfos();
-      List<DateTime> disabledDatesList =
-          bodyweightInfoList.map((e) => e.date).toList();
       DateTime start = DateTime(DateTime.now().year, 1, 1);
       DateTime end = DateTime.now();
-      List<DateTime> datesList = List.generate(end.difference(start).inDays + 1,
-          (i) => start.add(Duration(days: i)));
-      List<DateTime> allowedDatesList = datesList;
-      allowedDatesList
-          .removeWhere((element) => disabledDatesList.contains(element));
-      allowedDatesList.sort();
       showDatePicker(
         context: context,
-        selectableDayPredicate: (day) => !disabledDatesList.contains(day),
-        initialDate: allowedDatesList.length > 0
-            ? allowedDatesList.last
-            : end.add(Duration(days: 1)),
+        initialDate: end,
         firstDate: start,
-        lastDate:
-            allowedDatesList.length > 0 ? end : end.add(Duration(days: 1)),
+        lastDate: end,
       ).then((pickedDate) {
         if (pickedDate == null) return;
         setState(() {
@@ -196,10 +181,10 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
             onPressed: () {
               if (_image == null || _weight == null || _pickedDate == null)
                 return;
-              DBBodyweightInfo dbBodyweightInfo = DBBodyweightInfo();
+              DBHelper dbBodyweightInfo = DBHelper();
               BodyweightInfo bodyweightInfo =
                   BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
-              dbBodyweightInfo.save(bodyweightInfo);
+              dbBodyweightInfo.saveBodyweight(bodyweightInfo);
               _saveImage();
             },
             child: Text(

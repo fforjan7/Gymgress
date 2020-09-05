@@ -1,7 +1,8 @@
+import 'package:Gymgress/models/chartInfo.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bodyweightinfo.dart';
-import '../utils/DBBodyweightInfo.dart';
+import '../utils/dbhelper.dart';
 import '../widgets/chart.dart';
 import 'gallery_screen.dart';
 import 'newphoto_screen.dart';
@@ -14,24 +15,37 @@ class MyBodyScreen extends StatefulWidget {
 }
 
 class _MyBodyScreenState extends State<MyBodyScreen> {
-  DBBodyweightInfo dbBodyweightInfo;
+  DBHelper dbBodyweightInfo;
   List<BodyweightInfo> bodyweightInfos;
+  List<ChartInfo> bodyweightChartInfos;
   int _weight;
 
   @override
   void initState() {
     super.initState();
-    dbBodyweightInfo = DBBodyweightInfo();
+    dbBodyweightInfo = DBHelper();
     bodyweightInfos = [];
-    _refreshBodyweightInfos();
+    bodyweightChartInfos = [];
+    _refreshInfos();
   }
 
-  void _refreshBodyweightInfos() {
-    dbBodyweightInfo.getBodyweightInfos().then((info) {
+  void _refreshInfos() {
+    dbBodyweightInfo.getBodyweightInfos().then((weightInfo) {
       setState(() {
         bodyweightInfos.clear();
-        bodyweightInfos.addAll(info);
-        if (bodyweightInfos.length > 0) _weight = bodyweightInfos.last.weight;
+        bodyweightInfos.addAll(weightInfo);
+        if (bodyweightInfos.length > 0) {
+          bodyweightInfos.sort((a, b) {
+            return a.date.compareTo(b.date);
+          });
+          _weight = bodyweightInfos.last.weight;
+        }
+      });
+      dbBodyweightInfo.getBodyweightChartInfos().then((chartInfo) {
+        setState(() {
+          bodyweightChartInfos.clear();
+          bodyweightChartInfos.addAll(chartInfo);
+        });
       });
     });
   }
@@ -57,8 +71,8 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
           height: mediaQuery.size.height * 0.4,
           width: mediaQuery.size.width * 1,
           color: Theme.of(context).primaryColor,
-          child: bodyweightInfos.length > 0
-              ? BodyweightChart(data: bodyweightInfos)
+          child: bodyweightChartInfos.length > 0
+              ? BodyweightChart(data: bodyweightChartInfos)
               : Center(
                   child: Text(
                     'No data',
@@ -72,7 +86,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: mediaQuery.size.height * 0.02,
-            vertical: mediaQuery.size.height * 0.03,
+            vertical: mediaQuery.size.height * 0.04,
           ),
           child: RaisedButton(
             padding: EdgeInsets.symmetric(
@@ -92,6 +106,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
             splashColor: Theme.of(context).accentColor,
           ),
         ),
+        SizedBox(height: mediaQuery.size.height * 0.04),
         Padding(
           padding: EdgeInsets.all(mediaQuery.size.height * 0.02),
           child: Row(
@@ -130,7 +145,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
                 onPressed: () {
                   Navigator.of(context)
                       .pushNamed(NewPhotoScreen.nameRoute)
-                      .then((value) => _refreshBodyweightInfos());
+                      .then((_) => _refreshInfos());
                 },
                 backgroundColor: Theme.of(context).textSelectionColor,
                 elevation: 15.0,

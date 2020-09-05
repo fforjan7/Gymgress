@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Exercise {
+class ExerciseInfo {
   int id;
   String path;
   int weight;
   DateTime date;
 
-  Exercise({
+  ExerciseInfo({
     @required this.path,
     @required this.id,
     @required this.weight,
@@ -23,7 +23,7 @@ class Exercise {
     return map;
   }
 
-  Exercise.fromMap(Map<String, dynamic> map) {
+  ExerciseInfo.fromMap(Map<String, dynamic> map) {
     id = map['id'];
     path = map['name'];
     weight = map['weight'];
