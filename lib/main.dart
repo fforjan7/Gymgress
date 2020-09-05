@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:Gymgress/screens/newvideoscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -78,6 +79,7 @@ class _MyAppState extends State<MyApp> {
         NewPhotoScreen.nameRoute: (ctx) => NewPhotoScreen(),
         GalleryScreen.routeName: (ctx) => GalleryScreen(),
         ExerciseScreen.routeName: (ctx) => ExerciseScreen(),
+        NewVideoScreen.nameRoute:(ctx) => NewVideoScreen(),
       },
     );
   }

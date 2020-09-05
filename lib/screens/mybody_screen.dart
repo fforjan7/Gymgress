@@ -56,6 +56,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
         Container(
           height: mediaQuery.size.height * 0.4,
           width: mediaQuery.size.width * 1,
+          color: Theme.of(context).primaryColor,
           child: bodyweightInfos.length > 0
               ? BodyweightChart(data: bodyweightInfos)
               : Center(
