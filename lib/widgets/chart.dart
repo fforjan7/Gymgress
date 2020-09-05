@@ -11,19 +11,17 @@ class BodyweightChart extends StatefulWidget {
 }
 
 class _BodyweightChartState extends State<BodyweightChart> {
-  
-  List<charts.Series<BodyweightInfo, String>> series = [
-    charts.Series(
-      id: 'Bodyweight',
-      data: data,
-      domainFn: (series, _) => series.date.toIso8601String(),
-      measureFn: (series, _) => series.weight,
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
-    );
+    List<charts.Series<BodyweightInfo, DateTime>> series = [
+      charts.Series(
+        id: 'Bodyweight',
+        data: this.widget.data,
+        domainFn: (series, _) => series.date,
+        measureFn: (series, _) => series.weight,
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+      ),
+    ];
+    return charts.TimeSeriesChart(series, animate: true);
   }
 }

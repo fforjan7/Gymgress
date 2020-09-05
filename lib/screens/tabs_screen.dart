@@ -1,4 +1,4 @@
-import 'package:Gymgress/screens/exercises_screen.dart';
+import 'package:Gymgress/screens/exerciseslist_screen.dart';
 import 'package:Gymgress/screens/mybody_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class _TabsScreenState extends State<TabsScreen> {
         'title': 'MyBody',
       },
       {
-        'page': ExercisesScreen(),
+        'page': ExercisesListScreen(),
         'title': 'Exercises',
       },
     ];

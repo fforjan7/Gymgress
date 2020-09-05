@@ -3,7 +3,8 @@ import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'screens/exercises_screen.dart';
+import 'screens/exercisescreen.dart';
+import 'screens/exerciseslist_screen.dart';
 import 'screens/gallery_screen.dart';
 import 'screens/mybody_screen.dart';
 import 'screens/newphoto_screen.dart';
@@ -73,9 +74,10 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (ctx) => TabsScreen(),
         MyBodyScreen.routeName: (ctx) => MyBodyScreen(),
-        ExercisesScreen.routeName: (ctx) => ExercisesScreen(),
+        ExercisesListScreen.routeName: (ctx) => ExercisesListScreen(),
         NewPhotoScreen.nameRoute: (ctx) => NewPhotoScreen(),
         GalleryScreen.routeName: (ctx) => GalleryScreen(),
+        ExerciseScreen.routeName: (ctx) => ExerciseScreen(),
       },
     );
   }

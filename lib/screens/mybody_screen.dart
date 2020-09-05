@@ -1,3 +1,4 @@
+import 'package:Gymgress/widgets/bodyweight_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bodyweightinfo.dart';
@@ -53,20 +54,19 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
           ),
         ),
         Container(
-          margin:
-              EdgeInsets.symmetric(horizontal: mediaQuery.size.height * 0.02),
-          color: Theme.of(context).scaffoldBackgroundColor,
           height: mediaQuery.size.height * 0.4,
           width: mediaQuery.size.width * 1,
-          child: Center(
-            child: Text(
-              'No data',
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
-                fontSize: 25.0,
-              ),
-            ),
-          ),
+          child: bodyweightInfos.length > 0
+              ? BodyweightChart(data: bodyweightInfos)
+              : Center(
+                  child: Text(
+                    'No data',
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontSize: 25.0,
+                    ),
+                  ),
+                ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(
