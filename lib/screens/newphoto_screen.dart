@@ -24,7 +24,6 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
   DateTime _pickedDate;
   String imagesPath;
 
-
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
@@ -54,12 +53,28 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
       Navigator.of(context).pop();
     }
 
-    void _pickDate() {
+    void _pickDate() async {
+      DBBodyweightInfo db = new DBBodyweightInfo();
+      List<BodyweightInfo> bodyweightInfoList = await db.getBodyweightInfos();
+      List<DateTime> disabledDatesList =
+          bodyweightInfoList.map((e) => e.date).toList();
+      DateTime start = DateTime(DateTime.now().year, 1, 1);
+      DateTime end = DateTime.now();
+      List<DateTime> datesList = List.generate(end.difference(start).inDays + 1,
+          (i) => start.add(Duration(days: i)));
+      List<DateTime> allowedDatesList = datesList;
+      allowedDatesList
+          .removeWhere((element) => disabledDatesList.contains(element));
+      allowedDatesList.sort();
       showDatePicker(
         context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(2020),
-        lastDate: DateTime.now(),
+        selectableDayPredicate: (day) => !disabledDatesList.contains(day),
+        initialDate: allowedDatesList.length > 0
+            ? allowedDatesList.last
+            : end.add(Duration(days: 1)),
+        firstDate: start,
+        lastDate:
+            allowedDatesList.length > 0 ? end : end.add(Duration(days: 1)),
       ).then((pickedDate) {
         if (pickedDate == null) return;
         setState(() {
@@ -182,7 +197,8 @@ class _NewPhotoScreenState extends State<NewPhotoScreen> {
               if (_image == null || _weight == null || _pickedDate == null)
                 return;
               DBBodyweightInfo dbBodyweightInfo = DBBodyweightInfo();
-              BodyweightInfo bodyweightInfo = BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
+              BodyweightInfo bodyweightInfo =
+                  BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
               dbBodyweightInfo.save(bodyweightInfo);
               _saveImage();
             },

@@ -1,8 +1,8 @@
-import 'package:Gymgress/widgets/bodyweight_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bodyweightinfo.dart';
 import '../utils/DBBodyweightInfo.dart';
+import '../widgets/chart.dart';
 import 'gallery_screen.dart';
 import 'newphoto_screen.dart';
 
@@ -72,7 +72,7 @@ class _MyBodyScreenState extends State<MyBodyScreen> {
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: mediaQuery.size.height * 0.02,
-            vertical: mediaQuery.size.height * 0.04,
+            vertical: mediaQuery.size.height * 0.03,
           ),
           child: RaisedButton(
             padding: EdgeInsets.symmetric(

@@ -50,6 +50,8 @@ class DBBodyweightInfo {
     return maps.map((e) => BodyweightInfo.fromMap(e)).toList();
   }
 
+  
+
   Future close() async {
     var dbClient = await dbBodyweightInfo;
     dbClient.close();
