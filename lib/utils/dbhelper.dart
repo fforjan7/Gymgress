@@ -57,8 +57,7 @@ class DBHelper {
 
   Future<List<BodyweightInfo>> getBodyweightInfos() async {
     var dbClient = await database;
-    List<Map<String, dynamic>> maps =
-        await dbClient.query(TABLE1);
+    List<Map<String, dynamic>> maps = await dbClient.query(TABLE1);
     return maps.map((e) => BodyweightInfo.fromMap(e)).toList();
   }
 
@@ -68,7 +67,6 @@ class DBHelper {
         await dbClient.query(TABLE2, where: '$ID = ?', whereArgs: [id]);
     return maps.map((e) => ExerciseInfo.fromMap(e)).toList();
   }
-
 
   Future<List<ChartInfo>> getBodyweightChartInfos() async {
     var dbClient = await database;
@@ -85,9 +83,9 @@ class DBHelper {
     List<Map<String, dynamic>> maps = await dbClient.rawQuery('''
     SELECT AVG(weight) as weight, date
     FROM $TABLE2
-    WHERE $ID = id
+    WHERE $ID = ?
     GROUP BY date
-      ''');
+      ''', [id]);
     return maps.map((e) => ChartInfo.fromMap(e)).toList();
   }
 

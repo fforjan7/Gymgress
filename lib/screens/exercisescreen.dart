@@ -32,6 +32,13 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   ChewieController _chewieController;
 
   @override
+  void dispose() {
+    _chewieController.dispose();
+    _videoPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
   void didChangeDependencies() {
     if (!_loadedInitData) {
       final routeArgs =
@@ -182,7 +189,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
               height: mediaQuery.size.height * 0.4,
               width: mediaQuery.size.width * 1,
               color: Theme.of(context).scaffoldBackgroundColor,
-              child: (exerciseInfos.length > 0 || _chewieController != null)
+              child: (exerciseInfos.length > 0 && _chewieController != null)
                   ? FittedBox(
                       fit: BoxFit.contain,
                       child: Chewie(
