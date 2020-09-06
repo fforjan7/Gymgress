@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 
 import '../models/chartInfo.dart';
 
-class BodyweightChart extends StatefulWidget {
+class Chart extends StatefulWidget {
   final List<ChartInfo> data;
-  BodyweightChart({this.data});
+  Chart({this.data});
 
   @override
-  _BodyweightChartState createState() => _BodyweightChartState();
+  _ChartState createState() => _ChartState();
 }
 
-class _BodyweightChartState extends State<BodyweightChart> {
+class _ChartState extends State<Chart> {
   @override
   Widget build(BuildContext context) {
     List<charts.Series<ChartInfo, DateTime>> series = [
       charts.Series(
-        id: 'Bodyweight',
+        id: 'Chart',
         data: this.widget.data,
         domainFn: (series, _) => series.date,
         measureFn: (series, _) => series.weight,

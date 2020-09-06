@@ -27,18 +27,21 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   List<ExerciseInfo> exerciseInfos;
   List<ChartInfo> exercisesChartInfos;
   int _weight;
-  File _video;
 
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
 
   @override
   void dispose() {
-    if (_video != null) {
+    _disposeVideo();
+    super.dispose();
+  }
+
+  void _disposeVideo() {
+    if (_videoPlayerController != null) {
       _videoPlayerController.dispose();
       _chewieController.dispose();
     }
-    super.dispose();
   }
 
   @override
@@ -98,9 +101,11 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       });
       if (exerciseInfos.length > 0) {
         _getVideosDirPath().then((path) {
-          _videoPlayerController =
-              VideoPlayerController.file(File('$path/video$id'));
-          _chewieController = _setChewieController(_videoPlayerController);
+          setState(() {
+            _videoPlayerController =
+                VideoPlayerController.file(File('$path/video$id'));
+            _chewieController = _setChewieController(_videoPlayerController);
+          });
         });
       }
     });
@@ -126,7 +131,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
             width: mediaQuery.size.width * 1,
             color: Theme.of(context).primaryColor,
             child: exercisesChartInfos.length > 0
-                ? BodyweightChart(
+                ? Chart(
                     data: exercisesChartInfos,
                   )
                 : Center(
@@ -207,7 +212,7 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 style: TextStyle(fontSize: 25.0),
               ),
               onPressed: () {
-                print(id);
+                _disposeVideo();
                 Navigator.of(context)
                     .pushNamed(NewVideoScreen.nameRoute, arguments: {
                   'id': id,
