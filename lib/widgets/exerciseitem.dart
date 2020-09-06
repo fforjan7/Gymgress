@@ -1,5 +1,6 @@
-import 'package:Gymgress/screens/exercisescreen.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/exercisescreen.dart';
 
 class ExerciseItem extends StatelessWidget {
   final int id;

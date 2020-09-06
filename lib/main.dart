@@ -1,6 +1,5 @@
 import 'dart:io' as io;
 
-import 'package:Gymgress/screens/newvideoscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,6 +8,7 @@ import 'screens/exerciseslist_screen.dart';
 import 'screens/gallery_screen.dart';
 import 'screens/mybody_screen.dart';
 import 'screens/newphoto_screen.dart';
+import 'screens/newvideoscreen.dart';
 import 'screens/tabs_screen.dart';
 
 void main() {
@@ -21,7 +21,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   void _createImagesDir() async {
     final io.Directory _appDocDir = await getApplicationDocumentsDirectory();
     final io.Directory _appDocDirImages =
@@ -32,7 +31,6 @@ class _MyAppState extends State<MyApp> {
       await _appDocDirImages.create(recursive: true);
     }
   }
-
 
   void _createVideosDir() async {
     final io.Directory _appDocDir = await getApplicationDocumentsDirectory();
@@ -46,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  void initState() { 
+  void initState() {
     super.initState();
     _createImagesDir();
     _createVideosDir();
@@ -54,7 +52,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gymgress',
@@ -80,7 +77,7 @@ class _MyAppState extends State<MyApp> {
         NewPhotoScreen.nameRoute: (ctx) => NewPhotoScreen(),
         GalleryScreen.routeName: (ctx) => GalleryScreen(),
         ExerciseScreen.routeName: (ctx) => ExerciseScreen(),
-        NewVideoScreen.nameRoute:(ctx) => NewVideoScreen(),
+        NewVideoScreen.nameRoute: (ctx) => NewVideoScreen(),
       },
     );
   }

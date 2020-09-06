@@ -1,11 +1,9 @@
-
 class Exercise {
   final int id;
   final String name;
 
   const Exercise({this.id, this.name});
 }
-
 
 const exercises_list = const [
   Exercise(

@@ -1,7 +1,7 @@
-import 'package:Gymgress/widgets/exerciseitem.dart';
 import 'package:flutter/material.dart';
 
 import '../models/exercise.dart';
+import '../widgets/exerciseitem.dart';
 
 class ExercisesListScreen extends StatelessWidget {
   static const routeName = '/exercisesList';

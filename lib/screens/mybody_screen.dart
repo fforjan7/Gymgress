@@ -1,7 +1,7 @@
-import 'package:Gymgress/models/chartInfo.dart';
 import 'package:flutter/material.dart';
 
 import '../models/bodyweightinfo.dart';
+import '../models/chartInfo.dart';
 import '../utils/dbhelper.dart';
 import '../widgets/chart.dart';
 import 'gallery_screen.dart';

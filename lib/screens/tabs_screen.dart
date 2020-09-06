@@ -1,6 +1,7 @@
-import 'package:Gymgress/screens/exerciseslist_screen.dart';
-import 'package:Gymgress/screens/mybody_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'exerciseslist_screen.dart';
+import 'mybody_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   @override
@@ -47,7 +48,6 @@ class _TabsScreenState extends State<TabsScreen> {
         backgroundColor: Theme.of(context).primaryColor,
         unselectedItemColor: Theme.of(context).accentColor,
         selectedItemColor: Theme.of(context).textSelectionColor,
-        
         currentIndex: _selectedPage,
         items: [
           BottomNavigationBarItem(
