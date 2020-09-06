@@ -31,18 +31,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
 
-  @override
-  void dispose() {
-    _disposeVideo();
-    super.dispose();
-  }
-
-  void _disposeVideo() {
-    if (_videoPlayerController != null) {
-      _videoPlayerController.dispose();
-      _chewieController.dispose();
-    }
-  }
 
   @override
   void didChangeDependencies() {
@@ -52,8 +40,8 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
       id = routeArgs['id'];
       name = routeArgs['name'];
       _loadedInitData = true;
+      _refreshInfos();
     }
-    _refreshInfos();
     super.didChangeDependencies();
   }
 
@@ -115,7 +103,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -212,7 +199,9 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
                 style: TextStyle(fontSize: 25.0),
               ),
               onPressed: () {
-                _disposeVideo();
+                if(_chewieController != null){
+                _chewieController.pause();
+                _chewieController.seekTo(Duration(seconds: 0));}
                 Navigator.of(context)
                     .pushNamed(NewVideoScreen.nameRoute, arguments: {
                   'id': id,

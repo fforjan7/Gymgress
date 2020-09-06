@@ -41,14 +41,6 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
     super.didChangeDependencies();
   }
 
-  @override
-  void dispose() {
-    if (_video != null) {
-      _videoPlayerController.dispose();
-      _chewieController.dispose();
-    }
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,6 +231,7 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
                   ExerciseInfo(id: this.id, date: _pickedDate, weight: _weight);
               dbExerciseInfo.saveExercise(exerciseInfo);
               _saveVideo();
+              _chewieController.pause();
             },
             child: Text(
               'SAVE',
