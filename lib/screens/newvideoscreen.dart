@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Gymgress/models/exercisesinfo.dart';
+import 'package:Gymgress/utils/dbhelper.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,17 +82,13 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
       final PickedFile pickedVideo =
           await ImagePicker().getVideo(source: ImageSource.gallery);
       if (pickedVideo == null) return;
-      if (_videoName == null) {
-        _newVideoFile(pickedVideo);
-        _videoPlayerController = VideoPlayerController.file(_video);
-        _chewieController = _setChewieController(_videoPlayerController);
-      } else {
+      if (_videoName != null) {
         videosPath = await _getVideosDirPath();
         Directory('$videosPath/$_videoName').delete(recursive: true);
-        _newVideoFile(pickedVideo);
-        _videoPlayerController = VideoPlayerController.file(_video);
-        _chewieController = _setChewieController(_videoPlayerController);
       }
+      _newVideoFile(pickedVideo);
+      _videoPlayerController = VideoPlayerController.file(_video);
+      _chewieController = _setChewieController(_videoPlayerController);
     }
 
     void _saveVideo() async {
@@ -216,8 +214,8 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
             color: Theme.of(context).primaryColor,
           ),
           Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            height: mediaQuery.size.width * 1,
+            color: Theme.of(context).primaryColor,
+            height: mediaQuery.size.height * 0.4,
             width: mediaQuery.size.width * 1,
             margin: EdgeInsets.symmetric(
               horizontal: mediaQuery.size.height * 0.02,
@@ -236,10 +234,10 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
             onPressed: () {
               if (_video == null || _weight == null || _pickedDate == null)
                 return;
-              // DBHelper dbBodyweightInfo = DBHelper();
-              // BodyweightInfo bodyweightInfo =
-              //     BodyweightInfo(id: 0, date: _pickedDate, weight: _weight);
-              // dbBodyweightInfo.save(bodyweightInfo);
+              DBHelper dbExerciseInfo = DBHelper();
+              ExerciseInfo exerciseInfo =
+                  ExerciseInfo(id: this.id, date: _pickedDate, weight: _weight);
+              dbExerciseInfo.saveExercise(exerciseInfo);
               _saveVideo();
             },
             child: Text(

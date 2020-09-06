@@ -9,19 +9,19 @@ class Exercise {
 
 const exercises_list = const [
   Exercise(
-    id: 0,
+    id: 1,
     name: 'Bench Press',
   ),
   Exercise(
-    id: 0,
+    id: 2,
     name: 'Deadlift',
   ),
   Exercise(
-    id: 0,
+    id: 3,
     name: 'Squat',
   ),
   Exercise(
-    id: 0,
+    id: 4,
     name: 'Military press',
   ),
 ];
