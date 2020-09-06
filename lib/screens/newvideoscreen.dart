@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:Gymgress/models/exercisesinfo.dart';
-import 'package:Gymgress/utils/dbhelper.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
-//import '../utils/dbhelper.dart';
+import '../models/exercisesinfo.dart';
+import '../utils/dbhelper.dart';
 
 class NewVideoScreen extends StatefulWidget {
   static const nameRoute = '/newVideo';
@@ -41,18 +40,19 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
 
     ChewieController _setChewieController(videoController) {
+      VideoPlayerController controller = videoController;
       return ChewieController(
-        videoPlayerController: videoController,
-        aspectRatio: 3 / 2,
-        autoPlay: true,
+        videoPlayerController: controller,
+        aspectRatio: controller.value.aspectRatio,
+        autoPlay: false,
         looping: false,
+        autoInitialize: true,
       );
     }
 
@@ -106,142 +106,158 @@ class _NewVideoScreenState extends State<NewVideoScreen> {
       });
     }
 
-    return Scaffold(
-      resizeToAvoidBottomPadding: false,
-      appBar: AppBar(
-        title: Text(
-          'Import New Data',
-          style: Theme.of(context).textTheme.headline6,
+    void _pauseChewie() {
+      if (_chewieController != null) {
+        _chewieController.pause();
+        _chewieController.seekTo(Duration(seconds: 0));
+      }
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        _pauseChewie();
+        Navigator.of(context).pop();
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomPadding: false,
+        appBar: AppBar(
+          title: Text(
+            'Import New Data',
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding:
-                EdgeInsets.symmetric(vertical: mediaQuery.size.height * 0.02),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  height: mediaQuery.size.height * 0.08,
-                  width: mediaQuery.size.width * 0.4,
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Enter personal record:',
+        body: Column(
+          children: [
+            Padding(
+              padding:
+                  EdgeInsets.symmetric(vertical: mediaQuery.size.height * 0.02),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    height: mediaQuery.size.height * 0.08,
+                    width: mediaQuery.size.width * 0.4,
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Enter personal record:',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: mediaQuery.size.height * 0.08,
+                    width: mediaQuery.size.width * 0.25,
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.all(mediaQuery.size.height * 0.006),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Weight',
+                        ),
+                        onChanged: (newWeight) {
+                          _weight = int.parse(newWeight);
+                        },
+                        inputFormatters: [
+                          WhitelistingTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(3),
+                        ],
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding:
+                  EdgeInsets.symmetric(vertical: mediaQuery.size.height * 0.02),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    _pickedDate != null
+                        ? 'Chosen date: ${DateFormat('dd/MM/yyyy').format(_pickedDate)}'
+                        : 'No Chosen Date yet.',
                     style: TextStyle(
                       color: Theme.of(context).accentColor,
                       fontSize: 20.0,
                     ),
                   ),
-                ),
-                Container(
-                  height: mediaQuery.size.height * 0.08,
-                  width: mediaQuery.size.width * 0.25,
-                  alignment: Alignment.center,
-                  child: Padding(
-                    padding: EdgeInsets.all(mediaQuery.size.height * 0.006),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Weight',
+                  RaisedButton(
+                    onPressed: () {
+                      _pickDate();
+                    },
+                    child: Text(
+                      'Choose date',
+                      style: TextStyle(
+                        color: Theme.of(context).accentColor,
                       ),
-                      onChanged: (newWeight) {
-                        _weight = int.parse(newWeight);
-                        //Save it ...
-                        print('$_weight');
-                      },
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(3),
-                      ],
-                      keyboardType: TextInputType.number,
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding:
-                EdgeInsets.symmetric(vertical: mediaQuery.size.height * 0.02),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  _pickedDate != null
-                      ? 'Chosen date: ${DateFormat('dd/MM/yyyy').format(_pickedDate)}'
-                      : 'No Chosen Date yet.',
-                  style: TextStyle(
-                    color: Theme.of(context).accentColor,
-                    fontSize: 20.0,
-                  ),
-                ),
-                RaisedButton(
-                  onPressed: () {
-                    _pickDate();
-                  },
-                  child: Text(
-                    'Choose date',
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                    ),
-                  ),
-                  elevation: 17.0,
-                  color: Theme.of(context).primaryColor,
-                )
-              ],
-            ),
-          ),
-          RaisedButton(
-            onPressed: () {
-              _pickVideo();
-            },
-            child: Text(
-              'Pick video',
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
+                    elevation: 17.0,
+                    color: Theme.of(context).primaryColor,
+                  )
+                ],
               ),
             ),
-            elevation: 17.0,
-            color: Theme.of(context).primaryColor,
-          ),
-          Container(
-            color: Theme.of(context).primaryColor,
-            height: mediaQuery.size.height * 0.4,
-            width: mediaQuery.size.width * 1,
-            margin: EdgeInsets.symmetric(
-              horizontal: mediaQuery.size.height * 0.02,
-              vertical: mediaQuery.size.height * 0.03,
+            RaisedButton(
+              onPressed: () {
+                _pickVideo();
+              },
+              child: Text(
+                'Pick video',
+                style: TextStyle(
+                  color: Theme.of(context).accentColor,
+                ),
+              ),
+              elevation: 17.0,
+              color: Theme.of(context).primaryColor,
             ),
-            child: _video != null
-                ? FittedBox(
-                    fit: BoxFit.contain,
-                    child: Chewie(
-                      controller: _chewieController,
-                    ),
-                  )
-                : Text(''),
-          ),
-          RaisedButton(
-            onPressed: () {
-              if (_video == null || _weight == null || _pickedDate == null)
-                return;
-              DBHelper dbExerciseInfo = DBHelper();
-              ExerciseInfo exerciseInfo =
-                  ExerciseInfo(id: this.id, date: _pickedDate, weight: _weight);
-              dbExerciseInfo.saveExercise(exerciseInfo);
-              _saveVideo();
-              _chewieController.pause();
-            },
-            child: Text(
-              'SAVE',
-              style: TextStyle(
-                  color: Theme.of(context).textSelectionColor, fontSize: 20.0),
+            Container(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              height: mediaQuery.size.height * 0.4,
+              width: mediaQuery.size.width * 1,
+              margin: EdgeInsets.symmetric(
+                horizontal: mediaQuery.size.height * 0.02,
+                vertical: mediaQuery.size.height * 0.03,
+              ),
+              child: _video != null
+                  ? FittedBox(
+                      fit: BoxFit.contain,
+                      child: Chewie(
+                        controller: _chewieController,
+                      ),
+                    )
+                  : Text(''),
             ),
-            elevation: 17.0,
-            color: Theme.of(context).primaryColor,
-          ),
-        ],
+            RaisedButton(
+              onPressed: () {
+                if (_video == null || _weight == null || _pickedDate == null)
+                  return;
+                DBHelper dbExerciseInfo = DBHelper();
+                ExerciseInfo exerciseInfo = ExerciseInfo(
+                    id: this.id, date: _pickedDate, weight: _weight);
+                dbExerciseInfo.saveExercise(exerciseInfo);
+                _saveVideo();
+                if (_chewieController != null) {
+                  _chewieController.pause();
+                  _chewieController.seekTo(Duration(seconds: 0));
+                }
+              },
+              child: Text(
+                'SAVE',
+                style: TextStyle(
+                    color: Theme.of(context).textSelectionColor,
+                    fontSize: 20.0),
+              ),
+              elevation: 17.0,
+              color: Theme.of(context).primaryColor,
+            ),
+          ],
+        ),
       ),
     );
   }

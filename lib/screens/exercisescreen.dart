@@ -31,7 +31,6 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   VideoPlayerController _videoPlayerController;
   ChewieController _chewieController;
 
-
   @override
   void didChangeDependencies() {
     if (!_loadedInitData) {
@@ -46,11 +45,13 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   }
 
   ChewieController _setChewieController(videoController) {
+    VideoPlayerController controller = videoController;
     return ChewieController(
-      videoPlayerController: videoController,
-      aspectRatio: 3 / 2,
-      autoPlay: true,
+      videoPlayerController: controller,
+      aspectRatio: controller.value.aspectRatio,
+      autoPlay: false,
       looping: false,
+      autoInitialize: true,
     );
   }
 
@@ -103,119 +104,131 @@ class _ExerciseScreenState extends State<ExerciseScreen> {
   Widget build(BuildContext context) {
     MediaQueryData mediaQuery;
     mediaQuery = MediaQuery.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          name,
-          style: Theme.of(context).textTheme.headline6,
+    void _pauseChewie() {
+      if (_chewieController != null) {
+        _chewieController.pause();
+        _chewieController.seekTo(Duration(seconds: 0));
+      }
+    }
+
+    return WillPopScope(
+      onWillPop: () async {
+        _pauseChewie();
+        Navigator.of(context).pop();
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            name,
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: mediaQuery.size.height * 0.02),
-            height: mediaQuery.size.height * 0.3,
-            width: mediaQuery.size.width * 1,
-            color: Theme.of(context).primaryColor,
-            child: exercisesChartInfos.length > 0
-                ? Chart(
-                    data: exercisesChartInfos,
-                  )
-                : Center(
-                    child: Text(
-                      'No Data',
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontSize: 25.0,
+        body: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: mediaQuery.size.height * 0.02),
+              height: mediaQuery.size.height * 0.3,
+              width: mediaQuery.size.width * 1,
+              color: Theme.of(context).primaryColor,
+              child: (exercisesChartInfos.length > 0)
+                  ? Chart(
+                      data: exercisesChartInfos,
+                    )
+                  : Center(
+                      child: Text(
+                        'No Data',
+                        style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontSize: 25.0,
+                        ),
                       ),
                     ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Current PR:',
+                  style: TextStyle(
+                    color: Theme.of(context).accentColor,
+                    fontSize: 25.0,
                   ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Current PR:',
-                style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 25.0,
                 ),
-              ),
-              SizedBox(width: mediaQuery.size.width * 0.04),
-              Text(
-                _weight != null ? '$_weight' : '???',
-                style: TextStyle(
-                  color: Theme.of(context).textSelectionColor,
-                  fontSize: 40.0,
-                ),
-              ),
-              SizedBox(width: mediaQuery.size.width * 0.01),
-              Container(
-                height: 30,
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  'kg',
+                SizedBox(width: mediaQuery.size.width * 0.04),
+                Text(
+                  _weight != null ? '$_weight' : '???',
                   style: TextStyle(
                     color: Theme.of(context).textSelectionColor,
-                    fontSize: 20,
+                    fontSize: 40.0,
                   ),
                 ),
-              ),
-            ],
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: mediaQuery.size.height * 0.01),
-            height: mediaQuery.size.height * 0.4,
-            width: mediaQuery.size.width * 1,
-            color: Theme.of(context).primaryColor,
-            child: exerciseInfos.length > 0
-                ? FittedBox(
-                    fit: BoxFit.contain,
-                    child: Chewie(
-                      controller: _chewieController,
-                    ),
-                  )
-                : Center(
-                    child: Text(
-                      'Video is not inserted',
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontSize: 25.0,
-                      ),
+                SizedBox(width: mediaQuery.size.width * 0.01),
+                Container(
+                  height: 30,
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    'kg',
+                    style: TextStyle(
+                      color: Theme.of(context).textSelectionColor,
+                      fontSize: 20,
                     ),
                   ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: mediaQuery.size.height * 0.02,
+                ),
+              ],
             ),
-            child: RaisedButton(
+            Container(
+              margin: EdgeInsets.only(bottom: mediaQuery.size.height * 0.01),
+              height: mediaQuery.size.height * 0.4,
+              width: mediaQuery.size.width * 1,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: (exerciseInfos.length > 0 || _chewieController != null)
+                  ? FittedBox(
+                      fit: BoxFit.contain,
+                      child: Chewie(
+                        controller: _chewieController,
+                      ),
+                    )
+                  : Center(
+                      child: Text(
+                        'Video is not inserted',
+                        style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontSize: 25.0,
+                        ),
+                      ),
+                    ),
+            ),
+            Padding(
               padding: EdgeInsets.symmetric(
-                vertical: mediaQuery.size.height * 0.01,
-                horizontal: mediaQuery.size.height * 0.04,
+                horizontal: mediaQuery.size.height * 0.02,
               ),
-              child: Text(
-                'Add video',
-                style: TextStyle(fontSize: 25.0),
+              child: RaisedButton(
+                padding: EdgeInsets.symmetric(
+                  vertical: mediaQuery.size.height * 0.01,
+                  horizontal: mediaQuery.size.height * 0.04,
+                ),
+                child: Text(
+                  'Add video',
+                  style: TextStyle(fontSize: 25.0),
+                ),
+                onPressed: () {
+                  _pauseChewie();
+                  Navigator.of(context)
+                      .pushNamed(NewVideoScreen.nameRoute, arguments: {
+                    'id': id,
+                  }).then((_) {
+                    _refreshInfos();
+                  });
+                },
+                color: Theme.of(context).primaryColor,
+                textColor: Theme.of(context).textSelectionColor,
+                elevation: 15.0,
+                splashColor: Theme.of(context).accentColor,
               ),
-              onPressed: () {
-                if(_chewieController != null){
-                _chewieController.pause();
-                _chewieController.seekTo(Duration(seconds: 0));}
-                Navigator.of(context)
-                    .pushNamed(NewVideoScreen.nameRoute, arguments: {
-                  'id': id,
-                }).then((_) => () {
-                          _refreshInfos();
-                        });
-              },
-              color: Theme.of(context).primaryColor,
-              textColor: Theme.of(context).textSelectionColor,
-              elevation: 15.0,
-              splashColor: Theme.of(context).accentColor,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

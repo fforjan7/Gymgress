@@ -85,7 +85,7 @@ class DBHelper {
     List<Map<String, dynamic>> maps = await dbClient.rawQuery('''
     SELECT AVG(weight) as weight, date
     FROM $TABLE2
-    WHERE '$ID = $id'
+    WHERE $ID = id
     GROUP BY date
       ''');
     return maps.map((e) => ChartInfo.fromMap(e)).toList();

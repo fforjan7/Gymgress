@@ -16,7 +16,7 @@ class _ChartState extends State<Chart> {
   Widget build(BuildContext context) {
     List<charts.Series<ChartInfo, DateTime>> series = [
       charts.Series(
-        id: 'Chart',
+        id: 'chart',
         data: this.widget.data,
         domainFn: (series, _) => series.date,
         measureFn: (series, _) => series.weight,
